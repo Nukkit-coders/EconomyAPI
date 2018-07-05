@@ -23,3 +23,5 @@ permissions:
             default: true
           economyapi.command.setmoney:
             default: op
+          economyapi.command.withdraw:
+            default: true

@@ -29,7 +29,7 @@ public class MyMoneyCommand extends Command{
 	private EconomyAPI plugin;
 	
 	public MyMoneyCommand(EconomyAPI plugin) {
-		super("mymoney", "Shows your money", "/mymoney");
+		super("bal", "Shows your money", "/bal");
 		
 		this.plugin = plugin;
 	}

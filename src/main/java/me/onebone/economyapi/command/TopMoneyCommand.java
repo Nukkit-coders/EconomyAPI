@@ -34,7 +34,7 @@ public class TopMoneyCommand extends Command{
 	private EconomyAPI plugin;
 	
 	public TopMoneyCommand(EconomyAPI plugin) {
-		super("topmoney", "Shows top money of this server", "/topmoney [page]");
+		super("baltop", "Shows top money of this server", "/baltop [page]");
 		
 		this.plugin = plugin;
 	}

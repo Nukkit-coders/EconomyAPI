@@ -2,12 +2,13 @@
 Core of economy system for Nukkit
 
 ## Commands
- - /mymoney
+ - /bal
  - /seemoney
  - /givemoney
  - /takemoney
- - /topmoney
+ - /baltop
  - /setmoney
+ - /withdraw
 
 ## Permissions
 - economyapi

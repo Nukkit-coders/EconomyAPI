@@ -26,7 +26,15 @@ import java.util.LinkedHashMap;
 import cn.nukkit.Player;
 import cn.nukkit.event.EventHandler;
 import cn.nukkit.event.Listener;
+import cn.nukkit.event.player.PlayerDeathEvent;
+import cn.nukkit.event.player.PlayerInteractEvent;
 import cn.nukkit.event.player.PlayerJoinEvent;
+import cn.nukkit.event.player.PlayerInteractEvent.Action;
+import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemPaper;
+import cn.nukkit.level.Level;
+import cn.nukkit.math.Vector3;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.plugin.PluginBase;
 import cn.nukkit.utils.Utils;
 import cn.nukkit.utils.TextFormat;
@@ -290,7 +298,33 @@ public class EconomyAPI extends PluginBase implements Listener{
 	public void onJoin(PlayerJoinEvent event){
 		this.createAccount(event.getPlayer());
 	}
-	
+	@EventHandler
+    public void playerDeathEvent(PlayerDeathEvent ev){
+		Player player = ev.getEntity();
+		double money = this.myMoney(player);
+		if (this.myMoney(player) > 0){
+			this.setMoney(player, 0.9*money);
+			Item moneynote = new ItemPaper();
+			CompoundTag tag = new CompoundTag("value");
+			tag.putDouble("money", 0.1*money);
+			moneynote.setNamedTag(tag);
+			moneynote.setCustomName(TextFormat.YELLOW + "Money Note\n"+this.getMonetaryUnit()+0.1*money+"\nDropped by "+player.getName()+" upon death");
+			dropItem(moneynote, player.getLevel(),new Vector3(player.lastX, player.lastY, player.lastZ));
+			player.sendChat("-"+this.getMonetaryUnit()+moneynote.getNamedTag().getDouble("money"));
+		}
+	}
+	@EventHandler
+	public void onClick(PlayerInteractEvent ev){
+		Player player = ev.getPlayer();
+		Item item = ev.getItem();
+		if (ev.getAction().equals(Action.RIGHT_CLICK_BLOCK) && (item.getId() == Item.PAPER && item.getNamedTag().contains("money"))){
+			double money = item.getNamedTag().getDouble("money");
+			this.addMoney(player, money);
+			player.sendChat(TextFormat.YELLOW+"+"+this.getMonetaryUnit()+money);
+			player.getInventory().remove(item);
+		}
+
+	}
 	public void onDisable(){
 		this.saveAll();
 	}
@@ -299,16 +333,21 @@ public class EconomyAPI extends PluginBase implements Listener{
 		this.importLanguages();
 		this.registerCommands();
 		return this.selectProvider();
+	
+	}
+	private void dropItem(Item item, Level level, Vector3 source) {
+        level.dropItem(source, item);
 	}
 	
 	private void registerCommands(){
-		this.getServer().getCommandMap().register("mymoney", new MyMoneyCommand(this));
-		this.getServer().getCommandMap().register("topmoney", new TopMoneyCommand(this));
+		this.getServer().getCommandMap().register("bal", new MyMoneyCommand(this));
+		this.getServer().getCommandMap().register("baltop", new TopMoneyCommand(this));
 		this.getServer().getCommandMap().register("seemoney", new SeeMoneyCommand(this));
 		this.getServer().getCommandMap().register("givemoney", new GiveMoneyCommand(this));
 		this.getServer().getCommandMap().register("takemoney", new TakeMoneyCommand(this));
 		this.getServer().getCommandMap().register("pay", new PayCommand(this));
 		this.getServer().getCommandMap().register("setmoney", new SetMoneyCommand(this));
+		this.getServer().getCommandMap().register("withdraw", new WithdrawCommand(this));
 	}
 	
 	private boolean selectProvider(){
