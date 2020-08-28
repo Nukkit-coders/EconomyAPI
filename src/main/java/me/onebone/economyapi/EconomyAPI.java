@@ -25,6 +25,7 @@ import cn.nukkit.event.EventHandler;
 import cn.nukkit.event.Listener;
 import cn.nukkit.event.player.PlayerJoinEvent;
 import cn.nukkit.plugin.PluginBase;
+import cn.nukkit.utils.Config;
 import cn.nukkit.utils.TextFormat;
 import cn.nukkit.utils.Utils;
 import me.onebone.economyapi.command.*;
@@ -38,13 +39,10 @@ import me.onebone.economyapi.task.AutoSaveTask;
 import net.minidev.json.JSONObject;
 import net.minidev.json.JSONValue;
 
+import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.text.DecimalFormat;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 public class EconomyAPI extends PluginBase implements Listener {
     public static final int RET_NO_ACCOUNT = -3;
@@ -57,14 +55,16 @@ public class EconomyAPI extends PluginBase implements Listener {
     private Provider provider;
     private HashMap<String, JSONObject> language = null;
     private HashMap<String, Class<?>> providerClass = new HashMap<>();
+    private Config langConfig;
+    private String defaultLang = "def";
+    public HashMap<String, String> playerLang = new HashMap<>();
 
     static {
         MONEY_FORMAT.setMaximumFractionDigits(2);
     }
 
-    private String[] langList = new String[]{
-            "ch", "cs", "def", "fr", "id", "it", "jp", "ko", "nl", "ru", "zh"
-    };
+    public final ArrayList<String> langList = new ArrayList<>(Arrays.asList(
+            "ch", "cs", "def", "fr", "id", "it", "jp", "ko", "nl", "ru", "zh"));
 
     public static EconomyAPI getInstance() {
         return instance;
@@ -342,10 +342,10 @@ public class EconomyAPI extends PluginBase implements Listener {
         return provider.accountExists(checkAndConvertLegacy(id).map(UUID::toString).map(String::toLowerCase).orElse(id));
     }
 
-    public String getMessage(String key, String[] params, String player) { // TODO: Individual language
+    public String getMessage(String key, String[] params, String player) {
         player = player.toLowerCase();
 
-        JSONObject obj = this.language.get("def");
+        JSONObject obj = this.language.getOrDefault(this.playerLang.getOrDefault(player, this.defaultLang), this.language.get(this.defaultLang));
         if (obj.containsKey(key)) {
             String message = obj.getAsString(key);
 
@@ -399,6 +399,20 @@ public class EconomyAPI extends PluginBase implements Listener {
         }
     }
 
+    public Config getLangConfig() {
+        return this.langConfig;
+    }
+
+    public boolean setDefaultLang(String lang) {
+        if (this.langList.contains(lang)) {
+            this.defaultLang = lang;
+            this.langConfig.set("defaultLang", this.defaultLang);
+            this.langConfig.save();
+            return true;
+        }
+        return false;
+    }
+
     public void onLoad() {
         instance = this;
 
@@ -407,6 +421,14 @@ public class EconomyAPI extends PluginBase implements Listener {
 
     public void onEnable() {
         this.saveDefaultConfig();
+        this.saveResource("Language.yml");
+        //TODO Improve this, File is not suitable for storing too much data
+        this.langConfig = new Config(new File(this.getDataFolder() + "/Language.yml"), Config.YAML);
+        this.defaultLang = this.langConfig.getString("defaultLang", "def");
+        if (!this.langList.contains(this.defaultLang)) {
+            this.defaultLang = "def";
+        }
+        this.playerLang = this.langConfig.get("playerLang", new HashMap<>());
 
         boolean success = this.initialize();
 
@@ -438,6 +460,7 @@ public class EconomyAPI extends PluginBase implements Listener {
         this.getServer().getCommandMap().register("economy", new TakeMoneyCommand(this));
         this.getServer().getCommandMap().register("economy", new PayCommand(this));
         this.getServer().getCommandMap().register("economy", new SetMoneyCommand(this));
+        this.getServer().getCommandMap().register("economy", new SetLangCommand(this));
     }
 
     private boolean selectProvider() {
@@ -471,7 +494,9 @@ public class EconomyAPI extends PluginBase implements Listener {
         this.language = new HashMap<>();
 
         for (String lang : langList) {
-            InputStream is = this.getResource("lang_" + lang + ".json");
+            this.saveResource("lang_" + lang + ".json", "language/" + "lang_" + lang + ".json", false);
+            File is = new File(this.getDataFolder() + "/language/" + "lang_" + lang + ".json");
+            //InputStream is = this.getResource("lang_" + lang + ".json");
             try {
                 JSONObject obj = (JSONObject) JSONValue.parse(Utils.readFile(is));
                 this.language.put(lang, obj);

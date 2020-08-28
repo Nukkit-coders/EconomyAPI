@@ -53,8 +53,19 @@ public class SetLangCommand extends Command {
             return true;
         }
         String lang = args[0];
-
-        // TODO
+        if (!this.plugin.langList.contains(lang)) {
+            sender.sendMessage(this.plugin.getMessage("language-not-found", new String[]{ lang }, sender));
+            return true;
+        }
+        if (sender.isPlayer()) {
+            this.plugin.playerLang.put(sender.getName().toLowerCase(), lang);
+            this.plugin.getLangConfig().set("playerLang", this.plugin.playerLang);
+            this.plugin.getLangConfig().save();
+            sender.sendMessage(this.plugin.getMessage("language-set", new String[]{ lang }, sender));
+        }else {
+            this.plugin.setDefaultLang(lang);
+            sender.sendMessage(this.plugin.getMessage("language-set", new String[]{ lang }, sender));
+        }
         return true;
     }
 }

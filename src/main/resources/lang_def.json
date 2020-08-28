@@ -10,7 +10,8 @@
       "description": "Top balances on the server"
     }
   },
-  "language-set": "§6Language set to §7c%1",
+  "language-not-found": "§7%1 §6language not found",
+  "language-set": "§6Language set to §7%1",
   "request-cancelled": "§6Your request was cancelled",
   "player-not-connected": "§2%1 §6is not in server",
   "player-never-connected": "§2%1 §2was never seen in this server",
