@@ -19,14 +19,18 @@ package me.onebone.economyapi.command;
  */
 
 import cn.nukkit.IPlayer;
+import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
+import cn.nukkit.lang.LangCode;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.utils.TextFormat;
 import me.onebone.economyapi.EconomyAPI;
 
 import java.util.*;
+
+import static me.onebone.economyapi.EconomyAPI.serverLangCode;
 
 public class TopMoneyCommand extends Command {
     private final EconomyAPI plugin;
@@ -55,6 +59,7 @@ public class TopMoneyCommand extends Command {
 	@Override
     public boolean execute(final CommandSender sender, String label, final String[] args) {
         if (!this.plugin.isEnabled()) return false;
+        LangCode langCode = sender instanceof Player ? ((Player) sender).getLanguageCode() : serverLangCode;
         if (!sender.hasPermission("economyapi.command.topmoney")) {
             sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.permission"));
             return false;
@@ -68,13 +73,13 @@ public class TopMoneyCommand extends Command {
                 List<String> list = new LinkedList<>(money.keySet());
                 list.sort((s1, s2) -> Double.compare(money.get(s2), money.get(s1)));
                 StringBuilder output = new StringBuilder();
-                output.append(plugin.getMessage("topmoney-tag", new String[]{Integer.toString(page), Integer.toString(((money.size() + 6) / 5))}, sender)).append("\n");
+                output.append(EconomyAPI.getI18n().tr(langCode, "topmoney-tag", Integer.toString(page), Integer.toString(((money.size() + 6) / 5)))).append("\n");
                 if (page == 1) {
                     double total = 0;
                     for (double val : money.values()) {
                         total += val;
                     }
-                    output.append(plugin.getMessage("topmoney-total", new String[]{EconomyAPI.MONEY_FORMAT.format(total)}, sender)).append("\n\n");
+                    output.append(EconomyAPI.getI18n().tr(langCode, "topmoney-total", EconomyAPI.MONEY_FORMAT.format(total))).append("\n\n");
                 }
                 int duplicate = 0;
                 double prev = -1D;
@@ -85,7 +90,7 @@ public class TopMoneyCommand extends Command {
                     	if (m == prev) duplicate++;
                     	else duplicate = 0;
                     	prev = m;
-                        output.append(plugin.getMessage("topmoney-format", new String[]{Integer.toString(n + 1 - duplicate), getName(list.get(n)), EconomyAPI.MONEY_FORMAT.format(m)}, sender)).append("\n");
+                        output.append(EconomyAPI.getI18n().tr(langCode, "topmoney-format", Integer.toString(n + 1 - duplicate), getName(list.get(n)), EconomyAPI.MONEY_FORMAT.format(m))).append("\n");
                     } else if (page < current) {
                         break;
                     }
@@ -94,7 +99,8 @@ public class TopMoneyCommand extends Command {
                 sender.sendMessage(output.substring(0, output.length() - 1));
             }, true);
         } catch (NumberFormatException e) {
-            sender.sendMessage(TextFormat.RED + this.plugin.getMessage("topmoney-invalid-page-number", sender));
+
+            sender.sendMessage(EconomyAPI.getI18n().tr(langCode, "topmoney-invalid-page-number"));
         }
         return true;
     }

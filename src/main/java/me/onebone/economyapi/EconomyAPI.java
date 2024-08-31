@@ -20,15 +20,17 @@ package me.onebone.economyapi;
 
 import cn.nukkit.IPlayer;
 import cn.nukkit.Player;
+import cn.nukkit.Server;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.event.EventHandler;
 import cn.nukkit.event.Listener;
 import cn.nukkit.event.player.PlayerJoinEvent;
+import cn.nukkit.lang.LangCode;
+import cn.nukkit.lang.PluginI18n;
+import cn.nukkit.lang.PluginI18nManager;
 import cn.nukkit.plugin.PluginBase;
 import cn.nukkit.utils.TextFormat;
 import cn.nukkit.utils.Utils;
-import com.nimbusds.jose.shaded.json.JSONObject;
-import com.nimbusds.jose.shaded.json.JSONValue;
 import me.onebone.economyapi.command.*;
 import me.onebone.economyapi.event.account.CreateAccountEvent;
 import me.onebone.economyapi.event.money.AddMoneyEvent;
@@ -54,8 +56,9 @@ public class EconomyAPI extends PluginBase implements Listener {
     public static final int RET_SUCCESS = 1;
     public static final DecimalFormat MONEY_FORMAT = new DecimalFormat();
     private static EconomyAPI instance;
+    private static PluginI18n i18n;
+    public static LangCode serverLangCode;
     private Provider provider;
-    private HashMap<String, JSONObject> language = null;
     private final HashMap<String, Class<?>> providerClass = new HashMap<>();
 
     static {
@@ -68,6 +71,10 @@ public class EconomyAPI extends PluginBase implements Listener {
 
     public static EconomyAPI getInstance() {
         return instance;
+    }
+
+    public static PluginI18n getI18n() {
+        return i18n;
     }
 
     public boolean createAccount(Player player) {
@@ -342,35 +349,6 @@ public class EconomyAPI extends PluginBase implements Listener {
         return provider.accountExists(checkAndConvertLegacy(id).map(UUID::toString).map(String::toLowerCase).orElse(id));
     }
 
-    public String getMessage(String key, String[] params, String player) { // TODO: Individual language
-        player = player.toLowerCase();
-
-        JSONObject obj = this.language.get("def");
-        if (obj.containsKey(key)) {
-            String message = obj.getAsString(key);
-
-            message = message.replace("%MONETARY_UNIT%", this.getMonetaryUnit());
-
-            for (int i = 0; i < params.length; i++) {
-                message = message.replace("%" + (i + 1), params[i]);
-            }
-            return TextFormat.colorize(message);
-        }
-        return "There are no message with key \"" + key + "\"";
-    }
-
-    public String getMessage(String key, String sender) {
-        return this.getMessage(key, new String[]{}, sender);
-    }
-
-    public String getMessage(String key, CommandSender sender) {
-        return this.getMessage(key, new String[]{}, sender);
-    }
-
-    public String getMessage(String key, String[] params, CommandSender player) {
-        return this.getMessage(key, params, player.getName());
-    }
-
     public String getMonetaryUnit() {
         return this.getConfig().get("money.monetary-unit", "$");
     }
@@ -401,6 +379,9 @@ public class EconomyAPI extends PluginBase implements Listener {
 
     public void onLoad() {
         instance = this;
+        // 注册插件的 i18n
+        i18n = PluginI18nManager.register(this);
+        initServerLangCode();
 
         this.addProvider("yaml", YamlProvider.class);
     }
@@ -426,7 +407,6 @@ public class EconomyAPI extends PluginBase implements Listener {
     }
 
     private boolean initialize() {
-        this.importLanguages();
         this.registerCommands();
         return this.selectProvider();
     }
@@ -467,19 +447,6 @@ public class EconomyAPI extends PluginBase implements Listener {
         return true;
     }
 
-    private void importLanguages() {
-        this.language = new HashMap<>();
-
-        for (String lang : langList) {
-            InputStream is = this.getResource("lang_" + lang + ".json");
-            try {
-                JSONObject obj = (JSONObject) JSONValue.parse(Utils.readFile(is));
-                this.language.put(lang, obj);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
 
     private void checkAndConvertLegacy(UUID uuid) {
         IPlayer player = getServer().getOfflinePlayer(uuid);
@@ -508,5 +475,29 @@ public class EconomyAPI extends PluginBase implements Listener {
         double money = provider.getMoney(name);
         provider.createAccount(uuid.toString(), money);
         provider.removeAccount(name);
+    }
+
+    private void initServerLangCode() {
+        switch (Server.getInstance().getLanguage().getLang()) {
+            case "eng" -> {
+                serverLangCode = LangCode.en_US;
+            }
+            case "chs" -> {
+                serverLangCode = LangCode.zh_CN;
+            }
+            case "deu" -> {
+                serverLangCode = LangCode.de_DE;
+            }
+            case "rus" -> {
+                serverLangCode = LangCode.ru_RU;
+            }
+            default -> {
+                try {
+                    serverLangCode = LangCode.valueOf(Server.getInstance().getLanguage().getLang());
+                } catch (IllegalArgumentException e) {
+                    serverLangCode = LangCode.en_US;
+                }
+            }
+        }
     }
 }

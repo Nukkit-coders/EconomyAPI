@@ -1,6 +1,6 @@
 language: java
 jdk:
-- oraclejdk8
+- oraclejdk17
 script:
 - mvn clean
 - mvn package

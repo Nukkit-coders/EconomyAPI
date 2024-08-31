@@ -23,9 +23,12 @@ import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
+import cn.nukkit.lang.LangCode;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.utils.TextFormat;
 import me.onebone.economyapi.EconomyAPI;
+
+import static me.onebone.economyapi.EconomyAPI.serverLangCode;
 
 public class SetMoneyCommand extends Command {
     private final EconomyAPI plugin;
@@ -46,6 +49,7 @@ public class SetMoneyCommand extends Command {
     @Override
     public boolean execute(CommandSender sender, String label, String[] args) {
         if (!this.plugin.isEnabled()) return false;
+        LangCode langCode = sender instanceof Player ? ((Player) sender).getLanguageCode() : serverLangCode;
         if (!sender.hasPermission("economyapi.command.setmoney")) {
             sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.permission"));
             return false;
@@ -61,29 +65,29 @@ public class SetMoneyCommand extends Command {
         if (p != null) {
             player = p.getName();
         }
-        double amount;
+        double amount = 0;
         try {
             amount = Double.parseDouble(args[1]);
         } catch (NumberFormatException e) {
-            sender.sendMessage(this.plugin.getMessage("setmoney-invalid-number", sender));
+            sender.sendMessage(EconomyAPI.getI18n().tr(langCode, "setmoney-invalid-number", amount, plugin.getMonetaryUnit()));
             return true;
         }
 
         int result = this.plugin.setMoney(player, amount);
         switch (result) {
             case EconomyAPI.RET_NO_ACCOUNT:
-                sender.sendMessage(this.plugin.getMessage("player-never-connected", new String[]{player}, sender));
+                sender.sendMessage(EconomyAPI.getI18n().tr(langCode, "player-never-connected", player));
                 return true;
             case EconomyAPI.RET_CANCELLED:
-                sender.sendMessage(this.plugin.getMessage("setmoney-failed", new String[]{player}, sender));
+                sender.sendMessage(EconomyAPI.getI18n().tr(langCode, "setmoney-failed"));
                 return true;
             case EconomyAPI.RET_INVALID:
-                sender.sendMessage(this.plugin.getMessage("reached-max", new String[]{EconomyAPI.MONEY_FORMAT.format(amount)}, sender));
+                sender.sendMessage(EconomyAPI.getI18n().tr(langCode, "reached-max", EconomyAPI.MONEY_FORMAT.format(amount), plugin.getMonetaryUnit()));
                 return true;
             case EconomyAPI.RET_SUCCESS:
-                sender.sendMessage(this.plugin.getMessage("setmoney-setmoney", new String[]{player, EconomyAPI.MONEY_FORMAT.format(amount)}, sender));
+                sender.sendMessage(EconomyAPI.getI18n().tr(langCode, "setmoney-setmoney", player, EconomyAPI.MONEY_FORMAT.format(amount), plugin.getMonetaryUnit()));
                 if (p != null) {
-                    p.sendMessage(this.plugin.getMessage("setmoney-set", new String[]{EconomyAPI.MONEY_FORMAT.format(amount)}, sender));
+                    p.sendMessage(EconomyAPI.getI18n().tr(p.getLanguageCode(), "setmoney-set", EconomyAPI.MONEY_FORMAT.format(amount), plugin.getMonetaryUnit()));
                 }
                 return true;
         }

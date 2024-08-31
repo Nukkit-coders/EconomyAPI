@@ -1,15 +1,10 @@
 {
   "language": "en",
-  "commands": {
-    "mymoney": {
-      "usage": "/balance",
-      "description": "Check your available funds"
-    },
-    "topmoney": {
-      "usage": "/topbalance [page]",
-      "description": "Top balances on the server"
-    }
-  },
+  "commands.mymoney.usage": "/balance",
+  "commands.mymoney.description": "Check your available funds",
+  "commands.topmoney.usage": "/topbalance [page]",
+  "commands.topmoney.description": "Top balances on the server",
+
   "language-set": "§6Language set to §7c%1",
   "request-cancelled": "§6Your request was cancelled",
   "player-not-connected": "§2%1 §6is not on the server",
