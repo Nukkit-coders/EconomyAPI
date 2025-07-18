@@ -18,6 +18,8 @@
   "topmoney-format": "[%1] %2: %3",
   "pay-failed": "支払いに失敗しました。",
   "pay-success": "%2に%MONETARY_UNIT%%1支払いました。",
+  "pay-too-low": "§cThe amount is too small",
+  "pay-failed-self": "§cCan't pay self",
   "money-paid": "%1があなたに%MONETARY_UNIT%%2支払いました。",
   "takemoney-must-be-number": "金額は数字で入力してください。",
   "takemoney-invalid-number": "無効な数値です。",

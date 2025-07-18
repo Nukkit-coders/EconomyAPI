@@ -7,6 +7,8 @@
   "topmoney-format": "[%1] %2: %3",
   "pay-failed": "kan niet betalen.",
   "pay-success": "%MONETARY_UNIT%%1 betaald aan %2.",
+  "pay-too-low": "§cThe amount is too small",
+  "pay-failed-self": "§cCan't pay self",
   "money-paid": "%1 geeft jou %MONETARY_UNIT%%2.",
   "takemoney-must-be-number": "hoeveelheid is niet in nummers",
   "takemoney-invalid-number": "verkeerd nummer",

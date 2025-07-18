@@ -27,8 +27,7 @@ import cn.nukkit.event.player.PlayerJoinEvent;
 import cn.nukkit.plugin.PluginBase;
 import cn.nukkit.utils.TextFormat;
 import cn.nukkit.utils.Utils;
-import com.nimbusds.jose.shaded.json.JSONObject;
-import com.nimbusds.jose.shaded.json.JSONValue;
+import com.google.gson.Gson;
 import me.onebone.economyapi.command.*;
 import me.onebone.economyapi.event.account.CreateAccountEvent;
 import me.onebone.economyapi.event.money.AddMoneyEvent;
@@ -41,10 +40,7 @@ import me.onebone.economyapi.task.AutoSaveTask;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.DecimalFormat;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 public class EconomyAPI extends PluginBase implements Listener {
     public static final int RET_NO_ACCOUNT = -3;
@@ -55,7 +51,8 @@ public class EconomyAPI extends PluginBase implements Listener {
     public static final DecimalFormat MONEY_FORMAT = new DecimalFormat();
     private static EconomyAPI instance;
     private Provider provider;
-    private HashMap<String, JSONObject> language = null;
+    private String selectedLanguage;
+    private final HashMap<String, Map<String, Object>> language = new HashMap<>();
     private final HashMap<String, Class<?>> providerClass = new HashMap<>();
 
     static {
@@ -63,7 +60,7 @@ public class EconomyAPI extends PluginBase implements Listener {
     }
 
     private final String[] langList = new String[]{
-            "ch", "cs", "def", "fr", "id", "it", "jp", "ko", "nl", "ru", "zh"
+            "ch", "cs", "en", "fr", "id", "it", "jp", "ko", "nl", "ru", "zh"
     };
 
     public static EconomyAPI getInstance() {
@@ -343,11 +340,11 @@ public class EconomyAPI extends PluginBase implements Listener {
     }
 
     public String getMessage(String key, String[] params, String player) { // TODO: Individual language
-        player = player.toLowerCase();
+        //player = player.toLowerCase();
 
-        JSONObject obj = this.language.get("def");
+        Map<String, Object> obj = this.language.get(this.selectedLanguage);
         if (obj.containsKey(key)) {
-            String message = obj.getAsString(key);
+            String message = (String) obj.get(key);
 
             message = message.replace("%MONETARY_UNIT%", this.getMonetaryUnit());
 
@@ -468,16 +465,26 @@ public class EconomyAPI extends PluginBase implements Listener {
     }
 
     private void importLanguages() {
-        this.language = new HashMap<>();
+        this.selectedLanguage = getConfig().getString("language", "en");
+
+        Gson gson = new Gson();
+        boolean selectedLangValid = false;
 
         for (String lang : langList) {
+            if (!selectedLangValid && lang.equals(this.selectedLanguage)) {
+                selectedLangValid = true;
+            }
+
             InputStream is = this.getResource("lang_" + lang + ".json");
             try {
-                JSONObject obj = (JSONObject) JSONValue.parse(Utils.readFile(is));
-                this.language.put(lang, obj);
+                this.language.put(lang, gson.fromJson(Utils.readFile(is), Map.class));
             } catch (IOException e) {
-                e.printStackTrace();
+                getLogger().error("Failed to load language", e);
             }
+        }
+
+        if (!selectedLangValid) {
+            this.selectedLanguage = "en";
         }
     }
 

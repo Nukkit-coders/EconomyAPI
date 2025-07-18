@@ -7,6 +7,8 @@
   "topmoney-format": "[%1] %2: %3",
   "pay-failed": "Platba nebyla uspesna.",
   "pay-success": "Zaplaceno %MONETARY_UNIT%%1 hraci %2.",
+  "pay-too-low": "§cThe amount is too small",
+  "pay-failed-self": "§cCan't pay self",
   "money-paid": "%1 ti daroval %MONETARY_UNIT%%2.",
   "takemoney-must-be-number": "Pocet musi byt cislo",
   "takemoney-invalid-number": "Neplatne cislo",

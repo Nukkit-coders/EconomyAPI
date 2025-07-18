@@ -5,3 +5,4 @@ money:
 data:
   auto-save-interval: 10
   provider: yaml
+language: en

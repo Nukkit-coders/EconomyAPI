@@ -7,6 +7,8 @@
   "topmoney-format": "[%1] %2: %3",
   "pay-failed": "Gagal bayar.",
   "pay-success": "Telah membayar %MONETARY_UNIT%%1 ke %2.",
+  "pay-too-low": "§cThe amount is too small",
+  "pay-failed-self": "§cCan't pay self",
   "takemoney-must-be-number": "Jumlah harus berupa angka",
   "takemoney-invalid-number": "Nomor tidak valid.",
   "takemoney-player-lack-of-money": "%1 tidak punya %MONETARY_UNIT%%2. Uang %1: %MONETARY_UNIT%%3",

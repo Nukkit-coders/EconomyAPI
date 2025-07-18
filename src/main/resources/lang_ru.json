@@ -8,6 +8,8 @@
   "topmoney-format": "[%1] %2: %3",
   "pay-failed": "Не удалось передать деньги",
   "pay-success": "Игроку %2 выплачено %MONETARY_UNIT%%1",
+  "pay-too-low": "§cThe amount is too small",
+  "pay-failed-self": "§cCan't pay self",
   "money-paid": "%1 передал Вам %MONETARY_UNIT%%2.",
   "takemoney-must-be-number": "Сумма должна быть числом",
   "takemoney-invalid-number": "Неправильное число",
