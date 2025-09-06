@@ -1,0 +1,44 @@
+{
+  "language": "es",
+  "commands": {
+    "mymoney": {
+      "usage": "/balance",
+      "description": "Verifica tu saldo disponible"
+    },
+    "topmoney": {
+      "usage": "/topbalance [página]",
+      "description": "Top balances en el servidor"
+    }
+  },
+  "language-set": "§6Idioma establecido en §7%c%1",
+  "request-cancelled": "§6Tu solicitud fue cancelada",
+  "player-not-connected": "§2%1 §6no está en el servidor",
+  "player-never-connected": "§2%1 §2nunca ha sido visto en este servidor",
+  "topmoney-tag": "§7[]--- §6Saldo Máximo §7(§6Página §c%1§7/§c%2§7) ---[]",
+  "topmoney-total": "§6Saldo Total del Servidor §7: §c%1",
+  "topmoney-format": "§7(§6%1§7) §2%2§7: §c%3",
+  "topmoney-invalid-page-number": "§6Número de página proporcionado no válido",
+  "pay-failed": "§6Falló al pagar",
+  "pay-success": "§6Pagado §c%MONETARY_UNIT%%1 §6a §2%2",
+  "pay-too-low": "§cLa cantidad es demasiado pequeña",
+  "pay-failed-self": "§cNo puedes pagarte a ti mismo",
+  "money-paid": "§2%1 §6te ha dado §c%MONETARY_UNIT%%2",
+  "takemoney-must-be-number": "§6La cantidad debe ser numérica",
+  "takemoney-invalid-number": "§6Número proporcionado no válido",
+  "takemoney-player-lack-of-money": "§2%1 §6no tiene §c%MONETARY_UNIT%%2§7. Saldo de %1 §7: §c%MONETARY_UNIT%%3",
+  "takemoney-money-taken": "§c%MONETARY_UNIT%%1 §6ha sido retirado de tu cuenta",
+  "takemoney-took-money": "§6Has retirado §c%MONETARY_UNIT%%2 §6de §2%1",
+  "takemoney-failed": "§6Fallaste al intentar retirar dinero del jugador",
+  "givemoney-must-be-number": "§6La cantidad debe ser numérica",
+  "givemoney-invalid-number": "§6Número proporcionado no válido",
+  "givemoney-money-given": "§6Has recibido §c%MONETARY_UNIT%%1",
+  "givemoney-gave-money": "§6Diste §c%MONETARY_UNIT%%1 §6a §2%2",
+  "seemoney-seemoney": "Saldo de %1: %2",
+  "setmoney-setmoney": "Saldo de %1 ha sido ajustado a §c%MONETARY_UNIT%%2",
+  "setmoney-set": "§6Tu saldo ha sido ajustado a §c%MONETARY_UNIT%%1",
+  "setmoney-failed": "Error desconocido al intentar ajustar el saldo",
+  "setmoney-invalid-number": "§c%MONETARY_UNIT%%1 §6debe ser un valor numérico",
+  "mymoney-mymoney": "§6Saldo§7: §c%MONETARY_UNIT%%1",
+  "mystatus-show": "Mi estado financiero: %1%",
+  "reached-max": "§c%MONETARY_UNIT%%1 §6está por encima del límite máximo permitido"
+}
