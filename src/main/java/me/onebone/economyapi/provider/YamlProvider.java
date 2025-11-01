@@ -24,8 +24,9 @@ import java.io.File;
 import java.util.LinkedHashMap;
 
 public class YamlProvider implements Provider {
-    private Config file = null;
-    private LinkedHashMap<String, Double> data = null;
+    private Config file;
+    private LinkedHashMap<String, Double> data;
+    private boolean needSave;
 
     @Override
     public void init(File path) {
@@ -55,8 +56,11 @@ public class YamlProvider implements Provider {
 
     @Override
     public void save() {
-        file.set("money", data);
-        file.save();
+        if (needSave) {
+            needSave = false;
+            file.set("money", data);
+            file.save();
+        }
     }
 
     @Override
@@ -75,6 +79,7 @@ public class YamlProvider implements Provider {
     @Override
     public boolean removeAccount(String id) {
         if (accountExists(id)) {
+            needSave = true;
             data.remove(id);
             return true;
         }
@@ -84,6 +89,7 @@ public class YamlProvider implements Provider {
     @Override
     public boolean createAccount(String id, double defaultMoney) {
         if (!this.accountExists(id)) {
+            needSave = true;
             data.put(id, defaultMoney);
         }
         return false;
@@ -92,6 +98,7 @@ public class YamlProvider implements Provider {
     @Override
     public boolean setMoney(String id, double amount) {
         if (data.containsKey(id)) {
+            needSave = true;
             data.put(id, amount);
             return true;
         }
@@ -102,6 +109,7 @@ public class YamlProvider implements Provider {
     @Override
     public boolean addMoney(String id, double amount) {
         if (data.containsKey(id)) {
+            needSave = true;
             data.put(id, data.get(id) + amount);
             return true;
         }
@@ -111,6 +119,7 @@ public class YamlProvider implements Provider {
     @Override
     public boolean reduceMoney(String id, double amount) {
         if (data.containsKey(id)) {
+            needSave = true;
             data.put(id, data.get(id) - amount);
             return true;
         }

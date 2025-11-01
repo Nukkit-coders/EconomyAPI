@@ -3,6 +3,6 @@ money:
   default: 1000.0
   max: 9999999999.0
 data:
-  auto-save-interval: 10
+  auto-save-interval: 5
   provider: yaml
 language: en
