@@ -68,6 +68,10 @@ public class SetMoneyCommand extends Command {
             sender.sendMessage(this.plugin.getMessage("setmoney-invalid-number", sender));
             return true;
         }
+        if (!Double.isFinite(amount)) {
+            sender.sendMessage(this.plugin.getMessage("setmoney-invalid-number", sender));
+            return true;
+        }
 
         int result = this.plugin.setMoney(player, amount);
         switch (result) {

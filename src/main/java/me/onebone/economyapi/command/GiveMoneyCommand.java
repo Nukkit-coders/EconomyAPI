@@ -63,7 +63,7 @@ public class GiveMoneyCommand extends Command {
         }
         try {
             double amount = Double.parseDouble(args[1]);
-            if (amount < 0) {
+            if (amount < 0 || !Double.isFinite(amount)) {
                 sender.sendMessage(this.plugin.getMessage("givemoney-invalid-number", sender));
                 return true;
             }

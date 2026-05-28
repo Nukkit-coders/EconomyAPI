@@ -79,7 +79,7 @@ public class PayCommand extends Command {
             return true;
         }
 
-        if (amount < 0.01) {
+        if (amount < 0.01 || !Double.isFinite(amount)) {
             sender.sendMessage(this.plugin.getMessage("pay-too-low", sender));
             return true;
         }
